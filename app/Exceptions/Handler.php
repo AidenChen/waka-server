@@ -25,7 +25,7 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception  $e
+     * @param  \Exception $e
      * @return void
      */
     public function report(Exception $e)
@@ -36,16 +36,31 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $e
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $e)
     {
-        if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
+//        if ($e instanceof ModelNotFoundException) {
+//            $e = new NotFoundHttpException($e->getMessage(), $e);
+//        }
+        switch ($e) {
+            case ($e instanceof ModelNotFoundException):
+                return response()->view('errors.404', [], 404);
+                break;
+            case ($e instanceof NotFoundHttpException):
+                return response()->view('errors.404', ['exception' => $e], 404);
+                break;
+            case ($e instanceof ApplicationException):
+                $code = $e->getErrorCode();
+                return response()->json([
+                    'code' => $code,
+                    'msg' => app('error.info')->getErrorMsg($code, request()->headers->get('lang'))
+                ]);
+                break;
+            default:
+                return parent::render($request, $e);
         }
-
-        return parent::render($request, $e);
     }
 }
