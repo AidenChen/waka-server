@@ -12,7 +12,6 @@ use App\Exceptions\ApplicationException;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -26,12 +25,10 @@ class AuthController extends Controller
         } catch (TokenExpiredException $e) {
             throw new ApplicationException(41001);
         } catch (JWTException $e) {
-            dd($e);
             throw new ApplicationException(40001);
         }
 
-        header('Authorization: Bearer ' . $token);
-        return $this->responseData([]);
+        return $this->responseHeader('Authorization: Bearer ' . $token)->responseData([]);
     }
 
     public function authenticate(Request $request)
@@ -46,8 +43,7 @@ class AuthController extends Controller
             throw new ApplicationException(50001);
         }
 
-        header('Authorization: Bearer ' . $token);
-        return $this->responseData([
+        return $this->responseHeader('Authorization: Bearer ' . $token)->responseData([
             'user' => $request->user()
         ]);
     }
@@ -65,8 +61,7 @@ class AuthController extends Controller
         $user->save();
         $token = JWTAuth::fromUser($user);
 
-        header('Authorization: Bearer ' . $token);
-        return $this->responseData([
+        return $this->responseHeader('Authorization: Bearer ' . $token)->responseData([
             'user' => $user
         ]);
     }

@@ -46,4 +46,17 @@ abstract class Controller extends BaseController
             'data' => $input
         ]);
     }
+
+    public function responseHeader($header)
+    {
+        if (is_array($header)) {
+            foreach ($header as $item) {
+                header($item);
+            }
+        }
+        else {
+            header($header);
+        }
+        return $this;
+    }
 }

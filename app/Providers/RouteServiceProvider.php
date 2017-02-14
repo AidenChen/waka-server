@@ -14,7 +14,9 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'App\Http\Controllers';
+    protected $webNamespace = 'App\Http\WebControllers';
+
+    protected $appNamespace = 'App\Http\AppControllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -37,8 +39,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map(Router $router)
     {
-        $router->group(['namespace' => $this->namespace], function ($router) {
-            require app_path('Http/routes.php');
+        $router->group(['namespace' => $this->webNamespace], function ($router) {
+            require app_path('Http/Routes/Web.php');
+        });
+
+        $router->group(['namespace' => $this->appNamespace], function ($router) {
+            require app_path('Http/Routes/App.php');
         });
     }
 }
