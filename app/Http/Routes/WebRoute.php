@@ -11,8 +11,8 @@
 |
 */
 
-Route::group(['middleware' => 'init.request', 'prefix' => 'api/e'], function () {
-    Route::group(['prefix' => 'v1/app'], function () {
+Route::group(['middleware' => 'init.request', 'prefix' => 'api'], function () {
+    Route::group(['prefix' => 'v1/web'], function () {
         Route::post('user/refresh', 'AuthController@refresh');
         Route::post('user/login', 'AuthController@authenticate');
         Route::post('user/signup', 'AuthController@signup');

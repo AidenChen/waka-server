@@ -14,6 +14,8 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
+    protected $adminNamespace = 'App\Http\AdminControllers';
+
     protected $webNamespace = 'App\Http\WebControllers';
 
     protected $appNamespace = 'App\Http\AppControllers';
@@ -39,12 +41,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map(Router $router)
     {
+        $router->group(['namespace' => $this->adminNamespace], function ($router) {
+          require app_path('Http/Routes/AdminRoute.php');
+        });
+
         $router->group(['namespace' => $this->webNamespace], function ($router) {
-            require app_path('Http/Routes/Web.php');
+            require app_path('Http/Routes/WebRoute.php');
         });
 
         $router->group(['namespace' => $this->appNamespace], function ($router) {
-            require app_path('Http/Routes/App.php');
+            require app_path('Http/Routes/AppRoute.php');
         });
     }
 }
