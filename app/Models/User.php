@@ -16,6 +16,7 @@ class User extends Model implements AuthenticatableContract,
     CanResetPasswordContract
 {
     use Authenticatable;
+
     // 此特性为系统自带的ACL，注释掉是为了解决与EntrustUserTrait的方法冲突问题
 //    use Authorizable;
     use CanResetPassword;
@@ -40,11 +41,12 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token', 'last_login_time'];
+    protected $hidden = ['password', 'remember_token', 'last_login_time', 'created_at', 'updated_at'];
+
+    public $timestamps = false;
 
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
     }
-
 }

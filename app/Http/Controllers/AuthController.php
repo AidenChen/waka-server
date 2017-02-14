@@ -57,7 +57,9 @@ class AuthController extends Controller
             'password' => bcrypt($request->get('password'))
         ];
         $user = User::create($newUser);
-        $user->last_login_time = Carbon::now();
+        $user->last_login_time = time();
+        $user->created_at = time();
+        $user->updated_at = time();
         $user->save();
         $token = JWTAuth::fromUser($user);
 
