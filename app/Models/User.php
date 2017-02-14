@@ -33,22 +33,18 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name', 'user_email', 'user_password'];
+    protected $fillable = ['name', 'nick', 'email', 'password'];
 
     /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array
      */
-    protected $hidden = ['user_password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'last_login_time'];
 
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
     }
 
-    public function getAuthPassword()
-    {
-        return $this->user_password;
-    }
 }

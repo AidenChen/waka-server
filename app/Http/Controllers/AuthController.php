@@ -10,7 +10,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\ApplicationException;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -24,52 +26,48 @@ class AuthController extends Controller
         } catch (TokenExpiredException $e) {
             throw new ApplicationException(41001);
         } catch (JWTException $e) {
-            dd ($e);
+            dd($e);
             throw new ApplicationException(40001);
         }
 
-        return $this->responseData([
-            'token' => $token
-        ]);
+        header('Authorization: Bearer ' . $token);
+        return $this->responseData([]);
     }
 
     public function authenticate(Request $request)
     {
-        // grab credentials from the request
-//        $credentials = $request->only('email', 'password');
-        $credentials = [
-            'user_email' => $request->get('user_email'),
-            'password' => $request->get('user_password')
-        ];
+        $credentials = $request->only('name', 'password');
 
         try {
-            // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credentials)) {
                 throw new ApplicationException(40002);
             }
         } catch (JWTException $e) {
-            // something went wrong whilst attempting to encode the token
             throw new ApplicationException(50001);
         }
 
-        // all good so return the token
+        header('Authorization: Bearer ' . $token);
         return $this->responseData([
-            'token' => $token
+            'user' => $request->user()
         ]);
     }
 
     public function signup(Request $request)
     {
         $newUser = [
-            'user_email' => $request->get('user_email'),
             'name' => $request->get('name'),
-            'user_password' => bcrypt($request->get('user_password'))
+            'nick' => $request->get('nick') ?: $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => bcrypt($request->get('password'))
         ];
         $user = User::create($newUser);
+        $user->last_login_time = Carbon::now();
+        $user->save();
         $token = JWTAuth::fromUser($user);
 
+        header('Authorization: Bearer ' . $token);
         return $this->responseData([
-            'token' => $token
+            'user' => $user
         ]);
     }
 }
